@@ -1,0 +1,110 @@
+// ==========================================
+// 2. Phân hệ Product & Catalog (Quản lý hàng hóa & Vòng đời)
+// ==========================================
+
+enum ProductStatus {
+  DRAFT
+  AVAILABLE
+  RESERVED  // Đang được giữ chỗ
+  DEAL_PENDING // Đang có đề nghị giá được chấp nhận
+  SOLD
+  HIDDEN
+  DELETED
+}
+
+enum ItemCondition {
+  NEW
+  USED_LIKE_NEW
+  USED_GOOD
+  USED_FAIR
+  USED_POOR
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  parentId    String?
+  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children    Category[] @relation("SubCategories")
+  
+  // Quan hệ cấu hình (Flow-based)
+  attributeTemplates CategoryAttributeTemplate[]
+  products          Product[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CategoryAttributeTemplate {
+  id         String   @id @default(cuid())
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  key        String   // Ví dụ: "RAM", "Tác giả"
+  isRequired Boolean  @default(false)
+  options    String?  // Danh sách lựa chọn dạng JSON (nếu có)
+}
+
+model Product {
+  id          String        @id @default(cuid())
+  sellerId    String
+  categoryId  String
+  category    Category      @relation(fields: [categoryId], references: [id])
+  name        String
+  description String
+  status      ProductStatus @default(AVAILABLE)
+  condition   ItemCondition
+  
+  // Luồng Giá (Pricing Flow)
+  currentPrice Float
+  priceHistory PriceHistory[]
+  
+  // Dữ liệu Snapshot
+  snapshots    ProductSnapshot[]
+  
+  // Quan hệ khác
+  media        ProductMedia[]
+  attributes   ProductAttribute[]
+  offers       TradeOffer[]
+  reservations ProductReservation[]
+  orders       Order[]
+  wishlistedBy Wishlist[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PriceHistory {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  price     Float
+  createdAt DateTime @default(now())
+}
+
+model ProductMedia {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  url       String
+  type      String   @default("IMAGE")
+  isPrimary Boolean  @default(false)
+  order     Int      @default(0)
+}
+
+model ProductAttribute {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  key       String
+  value     String
+}
+
+model ProductSnapshot {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  versionName String
+  data        Json     // Chụp ảnh toàn bộ dữ liệu lúc Chốt đơn hoặc Giữ chỗ
+  createdAt   DateTime @default(now())
+}

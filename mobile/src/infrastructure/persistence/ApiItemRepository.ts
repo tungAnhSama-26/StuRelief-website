@@ -1,34 +1,41 @@
-import { Item, PostItemDTO } from '@/domain/entities/Item';
-import { IItemRepository } from '@/domain/repositories/IItemRepository';
-
-const API_BASE_URL = 'http://localhost:3000/api'; // Hoặc IP máy nếu chạy thật
+import { Item, CreateItemDTO } from '@shared/domain/Item';
+import { IItemRepository } from '@shared/domain/IItemRepository';
+import { ApiClient } from '../api/ApiClient';
 
 export class ApiItemRepository implements IItemRepository {
   async findAll(page: number, limit: number): Promise<{ items: Item[]; total: number }> {
-    const response = await fetch(`${API_BASE_URL}/products?page=${page}&limit=${limit}`);
-    const result = await response.json();
+    const data = await ApiClient.get<{ items: any[]; total: number }>(
+      `/items?page=${page}&limit=${limit}`
+    );
+    
     return {
-      items: result.data,
-      total: result.pagination.total
+      items: data.items.map(item => this.mapDateFields(item)),
+      total: data.total,
     };
   }
 
   async findById(id: string): Promise<Item | null> {
-    const response = await fetch(`${API_BASE_URL}/products/${id}`);
-    if (!response.ok) return null;
-    return await response.json();
+    try {
+      const item = await ApiClient.get<any>(`/items/${id}`);
+      return this.mapDateFields(item);
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('404')) {
+        return null;
+      }
+      throw error;
+    }
   }
 
-  async save(data: PostItemDTO): Promise<Item> {
-    const response = await fetch(`${API_BASE_URL}/products`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to post item');
-    }
-    return await response.json();
+  async save(data: CreateItemDTO): Promise<Item> {
+    const newItem = await ApiClient.post<any>('/items', data);
+    return this.mapDateFields(newItem);
+  }
+
+  private mapDateFields(item: any): Item {
+    return {
+      ...item,
+      createdAt: new Date(item.createdAt),
+      updatedAt: new Date(item.updatedAt),
+    };
   }
 }

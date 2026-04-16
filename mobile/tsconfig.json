@@ -4,22 +4,22 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/domain/*": ["./src/domain/*"],
       "@/infrastructure/*": ["./src/infrastructure/*"],
-      "@/application/*": ["./src/application/*"],
       "@/presentation/*": ["./src/presentation/*"],
       "@/components/*": ["./src/presentation/components/*"],
       "@/hooks/*": ["./src/presentation/hooks/*"],
       "@/constants/*": ["./src/presentation/constants/*"],
       "@/assets/*": ["./src/presentation/assets/*"],
       "@/app/*": ["./src/app/*"],
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@shared/*": ["../shared/src/*"]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "../shared/src/**/*"
   ]
 }

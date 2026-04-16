@@ -1,0 +1,112 @@
+// ==========================================
+// 1. Phân hệ Identity & Trust (Quản lý định danh & Uy tín)
+// ==========================================
+
+enum UserRole {
+  STUDENT
+  ADMIN
+  MODERATOR
+}
+
+enum UserStatus {
+  UNVERIFIED
+  VERIFIED
+  BANNED
+}
+
+enum VerificationStatus {
+  PENDING
+  REVIEWING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id                String            @id @default(cuid())
+  email             String            @unique
+  password          String
+  role              UserRole          @default(STUDENT)
+  status            UserStatus        @default(UNVERIFIED)
+  
+  // Quan hệ Core
+  profile           StudentProfile?   @relation("UserProfile")
+  
+  // Quan hệ Luồng Xác thực
+  verificationRequests VerificationRequest[]
+  
+  // Quan hệ Luồng Uy tín
+  reputationRecords ReputationRecord[]
+  reputationScore   Int               @default(100) // Điểm hiện tại
+  
+  // Quan hệ Luồng Xã hội (Trust Network)
+  trustGiven        UserTrustNetwork[] @relation("Truster")
+  trustReceived     UserTrustNetwork[] @relation("Trusted")
+  follows           Follow[]           @relation("Follower")
+  followedBy        Follow[]           @relation("Following")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StudentProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation("UserProfile", fields: [userId], references: [id])
+  studentCode  String?  @unique
+  fullName     String
+  phoneNumber  String?
+  universityId String
+  campusId     String?
+  bio          String?
+  avatarUrl    String?
+}
+
+model VerificationRequest {
+  id               String             @id @default(cuid())
+  userId           String
+  user             User               @relation(fields: [userId], references: [id])
+  status           VerificationStatus @default(PENDING)
+  
+  // Dữ liệu đối soát
+  selfieWithCardUrl String?
+  studentCardFront  String
+  studentCardBack   String
+  emailOtp          String?
+  
+  // Luồng Phê duyệt
+  moderatorId      String?
+  moderatorNote    String?
+  reviewedAt       DateTime?
+  
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+}
+
+model ReputationRecord {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  delta       Int      // Ví dụ: +10, -50
+  actionType  String   // TRANSACTION_SUCCESS, REPORT_VALID, SYSTEM_REWARD
+  referenceId String?  // ID của Order hoặc Report liên quan
+  note        String?
+  createdAt   DateTime @default(now())
+}
+
+model UserTrustNetwork {
+  id        String   @id @default(cuid())
+  trusterId String
+  truster   User     @relation("Truster", fields: [trusterId], references: [id])
+  trustedId String
+  trusted   User     @relation("Trusted", fields: [trustedId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  follower    User     @relation("Follower", fields: [followerId], references: [id])
+  followingId String
+  following   User     @relation("Following", fields: [followingId], references: [id])
+  createdAt   DateTime @default(now())
+}

@@ -1,0 +1,43 @@
+# --- Node.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# --- Environment Secrets ---
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+docker/.env
+
+# --- Next.js ---
+web/.next/
+web/out/
+web/build/
+
+# --- Mobile (Expo) ---
+mobile/.expo/
+mobile/dist/
+mobile/web-build/
+mobile/ios/
+mobile/android/
+
+# --- Operating System ---
+.DS_Store
+Thumbs.db
+*.pem
+
+# --- IDEs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Prisma ---
+web/prisma/migrations/
+!web/prisma/schema/
+!web/prisma/schema.prisma
+!web/prisma/seed.ts

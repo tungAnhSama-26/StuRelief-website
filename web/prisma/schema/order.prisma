@@ -1,0 +1,101 @@
+// ==========================================
+// 3. Phân hệ Order & Negotiation (Thương lượng & Giao dịch)
+// ==========================================
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+  EXPIRED
+}
+
+enum OrderStatus {
+  WAITING_CONFIRM  // Chờ người bán xác nhận đơn
+  PAYMENT_PENDING  // Chờ thanh toán (nếu có escrow)
+  MEETING          // Đang hẹn gặp mặt
+  DELIVERING       // Đang giao hàng (nếu có ship)
+  SUCCESS          // Giao dịch thành công
+  CANCELLED        // Giao dịch bị hủy
+  DISPUTED         // Đang tranh chấp
+}
+
+model TradeOffer {
+  id           String      @id @default(cuid())
+  productId    String
+  product      Product     @relation(fields: [productId], references: [id])
+  buyerId      String
+  proposedPrice Float
+  message      String?
+  status       OfferStatus @default(PENDING)
+  expiresAt    DateTime?
+  
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model ProductReservation {
+  id           String   @id @default(cuid())
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id])
+  userId       String
+  expiredAt    DateTime
+  status       String   @default("ACTIVE") // ACTIVE, EXPIRED, COMPLETED
+  createdAt    DateTime @default(now())
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  productId       String
+  product         Product     @relation(fields: [productId], references: [id])
+  buyerId         String
+  sellerId        String
+  finalPrice      Float
+  status          OrderStatus @default(WAITING_CONFIRM)
+  
+  // Luồng Thanh toán (Payment Flow)
+  paymentType     String      @default("CASH") // CASH, ESCROW
+  escrowSession   EscrowSession?
+  
+  // Luồng Trạng thái
+  history         OrderStatusLog[]
+  evidences       OrderEvidence[]
+  reviews         Review[]
+  dispute         DisputeCase?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderStatusLog {
+  id        String      @id @default(cuid())
+  orderId   String
+  order     Order       @relation(fields: [orderId], references: [id])
+  status    OrderStatus
+  note      String?
+  createdAt DateTime    @default(now())
+}
+
+model OrderEvidence {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  url       String
+  type      String   @default("PICKUP_PROOF") // PICKUP_PROOF, CHAT_IMAGE
+  caption   String?
+  createdAt DateTime @default(now())
+}
+
+model EscrowSession {
+  id              String   @id @default(cuid())
+  orderId         String   @unique
+  order           Order    @relation(fields: [orderId], references: [id])
+  amount          Float
+  fee             Float    @default(0)
+  status          String   @default("HELD") // HELD, RELEASED, REFUNDED
+  transactionId   String?  @unique
+  releaseApproved Boolean  @default(false)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

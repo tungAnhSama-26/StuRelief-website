@@ -1,0 +1,36 @@
+// ==========================================
+// 6. Phân hệ Location (Địa điểm & Campus)
+// ==========================================
+
+model University {
+  id        String   @id @default(cuid())
+  name      String
+  logoUrl   String?
+  emailDomains String[] // Ví dụ: ["fpt.edu.vn", "hcmute.edu.vn"]
+  campuses  Campus[]
+  profiles  StudentProfile[]
+}
+
+model Campus {
+  id           String       @id @default(cuid())
+  universityId String
+  university   University   @relation(fields: [universityId], references: [id])
+  name         String
+  address      String?
+  latitude     Float?
+  longitude    Float?
+  
+  // Điểm hẹn an toàn (Flow-based)
+  meetingPoints MeetingPoint[]
+  profiles     StudentProfile[]
+}
+
+model MeetingPoint {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  campusId     String
+  campus       Campus   @relation(fields: [campusId], references: [id])
+  isSafeZone   Boolean  @default(true) // Ưu tiên các điểm có bảo vệ hoặc camera
+  photoUrl     String?
+}

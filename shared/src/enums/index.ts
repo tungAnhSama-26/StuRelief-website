@@ -1,0 +1,46 @@
+export enum UserRole {
+  STUDENT = 'STUDENT',
+  ADMIN = 'ADMIN',
+  MODERATOR = 'MODERATOR'
+}
+
+export enum UserStatus {
+  UNVERIFIED = 'UNVERIFIED',
+  VERIFIED = 'VERIFIED',
+  BANNED = 'BANNED'
+}
+
+export enum VerificationStatus {
+  PENDING = 'PENDING',
+  REVIEWING = 'REVIEWING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED'
+}
+
+export enum ProductStatus {
+  DRAFT = 'DRAFT',
+  AVAILABLE = 'AVAILABLE',
+  RESERVED = 'RESERVED',
+  DEAL_PENDING = 'DEAL_PENDING',
+  SOLD = 'SOLD',
+  HIDDEN = 'HIDDEN',
+  DELETED = 'DELETED'
+}
+
+export enum ItemCondition {
+  NEW = 'NEW',
+  USED_LIKE_NEW = 'USED_LIKE_NEW',
+  USED_GOOD = 'USED_GOOD',
+  USED_FAIR = 'USED_FAIR',
+  USED_POOR = 'USED_POOR'
+}
+
+export enum OrderStatus {
+  WAITING_CONFIRM = 'WAITING_CONFIRM',
+  PAYMENT_PENDING = 'PAYMENT_PENDING',
+  MEETING = 'MEETING',
+  DELIVERING = 'DELIVERING',
+  SUCCESS = 'SUCCESS',
+  CANCELLED = 'CANCELLED',
+  DISPUTED = 'DISPUTED'
+}

@@ -1,0 +1,37 @@
+// ==========================================
+// 5. Phân hệ Messaging (Giao tiếp)
+// ==========================================
+
+model Conversation {
+  id        String               @id @default(cuid())
+  productId String?
+  title     String?
+  members   ConversationMember[]
+  messages  Message[]
+  
+  lastMessageAt DateTime         @default(now())
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+model ConversationMember {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  userId         String
+  joinedAt       DateTime     @default(now())
+  lastReadAt     DateTime     @default(now())
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  senderId       String
+  content        String       @db.Text
+  type           String       @default("TEXT") // TEXT, IMAGE, PRODUCT_CARD
+  metadata       Json?        // Dành cho các tin nhắn chứa thẻ sản phẩm hoặc vị trí
+  
+  // Trạng thái (Delivery Flow)
+  createdAt      DateTime     @default(now())
+}

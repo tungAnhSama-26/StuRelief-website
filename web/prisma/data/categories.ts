@@ -1,0 +1,17 @@
+export const categories = [
+  { name: 'Đồ điện tử', slug: 'electronics', description: 'Máy tính, điện thoại, phụ kiện' },
+  { name: 'Sách & Tài liệu', slug: 'books', description: 'Giáo trình, tài liệu học tập' },
+  { name: 'Thời trang nam', slug: 'mens-fashion', description: 'Quần áo, phụ kiện nam' },
+  { name: 'Thời trang nữ', slug: 'womens-fashion', description: 'Quần áo, phụ kiện nữ' },
+  { name: 'Đồ gia dụng', slug: 'home-appliances', description: 'Nồi cơm, ấm nước, quạt' },
+  { name: 'Xe cộ', slug: 'vehicles', description: 'Xe máy, xe đạp' },
+  { name: 'Thể thao', slug: 'sports', description: 'Dụng cụ tập luyện' },
+  { name: 'Nhà cũ/Phòng trọ', slug: 'rent', description: 'Nhượng phòng, nội thất cũ' },
+  { name: 'Nhạc cụ', slug: 'musical-instruments', description: 'Đàn guitar, organ, phụ kiện' },
+  { name: 'Giày dép', slug: 'footwear', description: 'Giày thể thao, giày công sở' },
+  { name: 'Mỹ phẩm', slug: 'cosmetics', description: 'Chăm sóc da, trang điểm' },
+  { name: 'Dịch vụ sinh viên', slug: 'services', description: 'Gia sư, sửa máy tính, thiết kế' },
+  { name: 'Thú cưng', slug: 'pets', description: 'Thức ăn, phụ kiện cho pet' },
+  { name: 'Khác', slug: 'others', description: 'Các mặt hàng khác' },
+  { name: 'Đồ ăn/Thực phẩm', slug: 'food', description: 'Đồ ăn nhanh, đặc sản quê' },
+];

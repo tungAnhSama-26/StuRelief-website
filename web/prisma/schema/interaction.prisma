@@ -1,0 +1,74 @@
+// ==========================================
+// 4. Phân hệ Interaction & Safety (Cộng đồng & An toàn)
+// ==========================================
+
+enum ReportStatus {
+  OPEN
+  UNDER_INVESTIGATION
+  RESOLVED
+  DISMISSED
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id])
+  reviewerId  String
+  reviewedId  String
+  
+  // Đánh giá chi tiết (Quality Flow)
+  rating      Int      @default(5) // 1-5 sao
+  body        String?
+  attributes  ReviewAttribute[] // Đánh giá theo tiêu chí cụ thể
+  
+  createdAt DateTime @default(now())
+}
+
+model ReviewAttribute {
+  id        String @id @default(cuid())
+  reviewId  String
+  review    Review @relation(fields: [reviewId], references: [id])
+  criterion String // Ví dụ: "Độ trung thực", "Tốc độ giao hàng"
+  score     Int
+}
+
+model ReportTicket {
+  id          String       @id @default(cuid())
+  reporterId  String
+  reportedId  String?      // Đối tượng bị báo cáo (User)
+  productId   String?      // Đối tượng bị báo cáo (Product)
+  reasonCode  String       // SPAM, SCAM, INAPPROPRIATE
+  description String
+  status      ReportStatus @default(OPEN)
+  
+  // Luồng Xử lý
+  investigationLog String? @db.Text
+  moderatorId      String?
+  actionTaken      String? // BAN_USER, HIDE_PRODUCT, NO_ACTION
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model DisputeCase {
+  id          String   @id @default(cuid())
+  orderId     String   @unique
+  order       Order    @relation(fields: [orderId], references: [id])
+  initiatorId String
+  reason      String
+  status      String   @default("OPEN")
+  
+  // Bằng chứng
+  evidences   DisputeEvidence[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DisputeEvidence {
+  id            String      @id @default(cuid())
+  disputeCaseId String
+  disputeCase   DisputeCase @relation(fields: [disputeCaseId], references: [id])
+  url           String
+  description   String?
+  createdAt     DateTime    @default(now())
+}

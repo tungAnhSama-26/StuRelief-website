@@ -7,8 +7,9 @@ export interface Item {
   studentId: string;
   isQuickSell: boolean;
   description?: string;
-  createdAt: string; // Trong mobile thường nhận từ JSON nên là string
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export type PostItemDTO = Omit<Item, 'id' | 'createdAt' | 'updatedAt'>;
+export type CreateItemDTO = Omit<Item, 'id' | 'createdAt' | 'updatedAt'>;
+export type UpdateItemDTO = Partial<CreateItemDTO>;

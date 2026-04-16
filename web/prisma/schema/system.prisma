@@ -1,0 +1,43 @@
+// ==========================================
+// 7. Phân hệ System & Audit (Hệ thống & Nhật ký)
+// ==========================================
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  content   String
+  type      String   // SYSTEM, TRANSACTION, CHAT, ALARM
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String   // Ví dụ: LOGIN, DELETE_PRODUCT, CHANGE_PRICE
+  targetType String? // e.g., "PRODUCT"
+  targetId   String?
+  metadata   Json?   // Lưu các thay đổi chi tiết dưới dạng JSON
+  ipAddress  String?
+  userAgent  String?
+  createdAt DateTime @default(now())
+}
+
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  group     String   @default("GENERAL") // FEES, LIMITS, SECURITY
+  description String?
+  updatedAt DateTime @updatedAt
+}
