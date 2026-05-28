@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: sturelief-db-prod
+    restart: always
+    env_file:
+      - docker/.env
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-sturelief}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.prod.Dockerfile
+    container_name: sturelief-web-prod
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - docker/.env
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-sturelief}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-super-secret-key-at-least-32-chars}
+      NEXT_PUBLIC_API_URL: http://localhost:8080/api
+    ports:
+      - "8080:3000"
+
+volumes:
+  postgres_prod_data:

@@ -6,5 +6,12 @@
     "web",
     "mobile",
     "shared"
-  ]
+  ],
+  "scripts": {
+    "db:setup": "npm run db:setup -w web"
+  },
+  "dependencies": {
+    "prisma": "^6.19.3",
+    "@prisma/client": "^6.19.3"
+  }
 }

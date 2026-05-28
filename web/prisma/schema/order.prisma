@@ -57,6 +57,10 @@ model Order {
   paymentType     String      @default("CASH") // CASH, ESCROW
   escrowSession   EscrowSession?
   
+  // Địa điểm hẹn
+  meetingPointId  String?
+  meetingPoint    MeetingPoint? @relation(fields: [meetingPointId], references: [id])
+  
   // Luồng Trạng thái
   history         OrderStatusLog[]
   evidences       OrderEvidence[]

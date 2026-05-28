@@ -33,4 +33,5 @@ model MeetingPoint {
   campus       Campus   @relation(fields: [campusId], references: [id])
   isSafeZone   Boolean  @default(true) // Ưu tiên các điểm có bảo vệ hoặc camera
   photoUrl     String?
+  orders       Order[]
 }

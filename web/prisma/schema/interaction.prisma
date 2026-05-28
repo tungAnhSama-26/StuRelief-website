@@ -19,6 +19,7 @@ model Review {
   // Đánh giá chi tiết (Quality Flow)
   rating      Int      @default(5) // 1-5 sao
   body        String?
+  imageUrl    String?
   attributes  ReviewAttribute[] // Đánh giá theo tiêu chí cụ thể
   
   createdAt DateTime @default(now())
